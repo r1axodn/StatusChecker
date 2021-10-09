@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"net/url"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -13,38 +11,47 @@ type result struct {
 	status string
 }
 
-func CheckStatus(url string) string {
+func CheckStatus(url string) (string, int) {
 	res, err := http.Get(url)
-	if err != nil || res.StatusCode >= 400 {
-		/*
-			return result{failStatus}*/
-		failStatus := fmt.Sprintf("Failed with status %d", res.StatusCode)
-		return failStatus
-	} else {
-		/*
-			successStatus := fmt.Sprintf("Successful with status %d", res.StatusCode)
-			return result{successStatus}*/
-		successStatus := fmt.Sprintf("Successful with status %d", res.StatusCode)
-		return successStatus
+	if err != nil {
+		return "err!", http.StatusInternalServerError
 	}
-}
-
-func CleanString(str string) string {
-	return strings.Join(strings.Fields(strings.TrimSpace(str)), " ")
+	if res.StatusCode >= 400 && res.StatusCode < 500 {
+		failStatus := fmt.Sprintf("Failed with status %d", res.StatusCode)
+		return failStatus, res.StatusCode
+	} else if res.StatusCode >= 200 && res.StatusCode < 300 {
+		successStatus := fmt.Sprintf("Successful with status %d", res.StatusCode)
+		return successStatus, res.StatusCode
+	} else if res.StatusCode >= 300 && res.StatusCode < 400 {
+		status300 := "Hmm... the client is choosing multiple things."
+		return status300, res.StatusCode
+	} else if res.StatusCode >= 500 {
+		StatusInternalServerError := fmt.Sprintf("Oki.. the server has a problem. Give up")
+		return StatusInternalServerError, res.StatusCode
+	} else if res.StatusCode >= 100 && res.StatusCode < 200 {
+		status100 := "Loading...99%"
+		return status100, res.StatusCode
+	}
+	return fmt.Sprintf("Successful with status %d", res.StatusCode), res.StatusCode
 }
 
 func handleHome(c echo.Context) error {
-	return c.File("home.html")
+	return c.File("./html/home.html")
 }
 
 func handleChecker(c echo.Context) error {
-	url := strings.ToLower(CleanString(c.FormValue("urlInput")))
-	if isValidUrl(url) == false {
-		return c.String(http.StatusOK, "Please enter a valid url.")
+	result, status := CheckStatus("https://asdiguha3o8g4mayb23p498b5ynba894y23.com/")
+	fmt.Println(result)
+	if status >= 400 && status < 500 {
+		return c.File("./html/400.html")
+	} else if status >= 300 && status < 500 {
+		return c.File("./html/300.html")
+	} else if status >= 500 {
+		return c.File("./html/500.html")
+	} else if status >= 100 && status < 200 {
+		return c.File("./html/100.html")
 	}
-	status := CheckStatus(url)
-	fmt.Println(status)
-	return c.String(http.StatusOK, status)
+	return c.File("./html/200.html")
 }
 
 func main() {
@@ -52,17 +59,4 @@ func main() {
 	e.GET("/", handleHome)
 	e.POST("/check", handleChecker)
 	e.Logger.Fatal(e.Start(":3000"))
-}
-
-func isValidUrl(toTest string) bool {
-	_, err := url.ParseRequestURI(toTest)
-	if err != nil {
-		return false
-	}
-
-	u, err := url.Parse(toTest)
-	if err != nil || u.Scheme == "" || u.Host == "" {
-		return false
-	}
-	return true
 }

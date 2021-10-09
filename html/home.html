@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>StatusChecker</title>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+    <style>
+      .main {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .checkButton {
+        margin: auto;
+        display: block; 
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <form method="POST" action="/check">
+        <h1>Checks the status of Github</h1>
+        <button class="checkButton">Check</button>
+      </form>
+    </div>
+  </body>
+</html>
