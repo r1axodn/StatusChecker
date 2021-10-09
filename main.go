@@ -40,7 +40,7 @@ func handleHome(c echo.Context) error {
 }
 
 func handleChecker(c echo.Context) error {
-	result, status := CheckStatus("https://github.com/")
+	result, status := CheckStatus("https://discord.com/")
 	fmt.Println(result)
 	if status >= 400 && status < 500 {
 		return c.File("./html/400.html")
