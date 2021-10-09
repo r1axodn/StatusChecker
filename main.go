@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -38,6 +39,9 @@ func handleHome(c echo.Context) error {
 
 func handleChecker(c echo.Context) error {
 	url := strings.ToLower(CleanString(c.FormValue("urlInput")))
+	if isValidUrl(url) == false {
+		return c.String(http.StatusOK, "Please enter a valid url.")
+	}
 	status := CheckStatus(url)
 	fmt.Println(status)
 	return c.String(http.StatusOK, status)
@@ -48,4 +52,17 @@ func main() {
 	e.GET("/", handleHome)
 	e.POST("/check", handleChecker)
 	e.Logger.Fatal(e.Start(":3000"))
+}
+
+func isValidUrl(toTest string) bool {
+	_, err := url.ParseRequestURI(toTest)
+	if err != nil {
+		return false
+	}
+
+	u, err := url.Parse(toTest)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return false
+	}
+	return true
 }
