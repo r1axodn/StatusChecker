@@ -26,7 +26,7 @@ func CheckStatus(url string) (string, int) {
 		status300 := "Hmm... the client is choosing multiple things."
 		return status300, res.StatusCode
 	} else if res.StatusCode >= 500 {
-		StatusInternalServerError := fmt.Sprintf("Oki.. the server has a problem. Give up")
+		StatusInternalServerError := "Oki.. the server has a problem. Give up"
 		return StatusInternalServerError, res.StatusCode
 	} else if res.StatusCode >= 100 && res.StatusCode < 200 {
 		status100 := "Loading...99%"
