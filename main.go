@@ -60,3 +60,4 @@ func main() {
 	e.POST("/check", handleChecker)
 	e.Logger.Fatal(e.Start(":3000"))
 }
+	
