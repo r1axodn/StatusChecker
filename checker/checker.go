@@ -10,8 +10,8 @@ type result struct {
 	status string
 }
 
-func CheckStatus(url string) result {
-	res, err := http.Get(url)
+func CheckStatus(urlOrIp string) result {
+	res, err := http.Get(urlOrIp)
 	if err != nil || res.StatusCode >= 400 {
 		failStatus := fmt.Sprintf("Failed with status %d", res.StatusCode)
 		return result{failStatus}
